@@ -27,13 +27,19 @@ in no particular order.  Next, s3ls lists all objects within the
 aforementioned buckets, sorted by last modification time. The -N
 option can be used to limit s3ls's object output.
 
+Names containing a tab character, newline, or backslash are escaped
+into their three digit octal representation, preceded by a backslash,
+i.e. \nnn.
+
 The columns for objects are:
-	name, prefixed by the bucket name and a slash character '/'
+  bucket name
+  object name
   time of last modification in RFC822 format
   size in bytes (unless -k, -m, or -g command line options are given)
 
 The columns for buckets are:
   name
+  empty
   timestamp of the last modification of the most recently updated object
   sum of the sizes for all objects in the bucket
 	time of bucket creation
@@ -41,4 +47,5 @@ The columns for buckets are:
 
 Bugs:
 	-k, -m, -g, formatting isn't very pretty
-  unknown/unspecified regex dialect
+  unspecified regex dialect
+  code hackily adds anchors when compiling the bucket regex

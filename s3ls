@@ -35,6 +35,16 @@ def posint(s):
         raise ValueError('invalid literal for posint() with base 10: \'{}\''.format(s))
     return r
 
+# escape tabs, newlines and backslash
+CMAP = [ chr(i) for i in range(256) ]
+CMAP[ord('\t')] = '\\011'
+CMAP[ord('\n')] = '\\012'
+CMAP[ord('\\')] = '\\134'
+def escape(s):
+    return ''.join((CMAP[c] for c in bytearray(s, 'utf8')))
+
+def fmt_line(*lst):
+    return '\t'.join((escape(s) for s in lst))
 
 if __name__ == '__main__':
     try:
@@ -91,13 +101,14 @@ if __name__ == '__main__':
             if obj.last_modified > modified_max:
                 modified_max = obj.last_modified
 
-        print('\t'.join((
+        print(fmt_line(
             bucket.name,
+            '',
             fmt_time(modified_max),
             opt_size(size),
             fmt_time(bucket.creation_date),
             '{}'.format(nfiles),
-        )))
+        ))
 
     objsorted = [ heapq.heappop(objheap)[1] for i in range(len(objheap)) ]
     objiter = reversed(objsorted) if opt_reverse else objsorted
@@ -105,8 +116,9 @@ if __name__ == '__main__':
     for i, obj in enumerate(objiter):
         if opt_limit and i >= opt_limit:
             break
-        print('\t'.join((
-            '{}/{}'.format(obj.bucket_name, obj.key),
+        print(fmt_line(
+            obj.bucket_name,
+            obj.key,
             fmt_time(obj.last_modified),
             opt_size(obj.size),
-        )))
+        ))
